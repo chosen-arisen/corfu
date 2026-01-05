@@ -1,12 +1,12 @@
 ;;; corfu-history.el --- Sorting by history for Corfu -*- lexical-binding: t -*-
 
-;; Copyright (C) 2022-2025 Free Software Foundation, Inc.
+;; Copyright (C) 2022-2026 Free Software Foundation, Inc.
 
 ;; Author: Daniel Mendler <mail@daniel-mendler.de>
 ;; Maintainer: Daniel Mendler <mail@daniel-mendler.de>
 ;; Created: 2022
-;; Version: 2.6
-;; Package-Requires: ((emacs "29.1") (compat "30") (corfu "2.6"))
+;; Version: 2.7
+;; Package-Requires: ((emacs "29.1") (compat "30") (corfu "2.7"))
 ;; URL: https://github.com/minad/corfu
 
 ;; This file is part of GNU Emacs.
@@ -77,7 +77,7 @@ The shift will decay away after `corfu-history-duplicate' times
     (let ((ht (make-hash-table :test #'equal :size (length corfu-history)))
           (decay (/ -1.0 (* corfu-history-duplicate corfu-history-decay))))
       (cl-loop for elem in corfu-history for idx from 0
-               for r = (if-let ((r (gethash elem ht)))
+               for r = (if-let* ((r (gethash elem ht)))
                            ;; Reduce duplicate rank with exponential decay.
                            (- r (round (* corfu-history-duplicate (exp (* decay idx)))))
                          ;; Never outrank the most recent element.

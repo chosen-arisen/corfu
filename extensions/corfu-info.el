@@ -1,12 +1,12 @@
 ;;; corfu-info.el --- Show candidate information in separate buffer -*- lexical-binding: t -*-
 
-;; Copyright (C) 2022-2025 Free Software Foundation, Inc.
+;; Copyright (C) 2022-2026 Free Software Foundation, Inc.
 
 ;; Author: Daniel Mendler <mail@daniel-mendler.de>
 ;; Maintainer: Daniel Mendler <mail@daniel-mendler.de>
 ;; Created: 2022
-;; Version: 2.6
-;; Package-Requires: ((emacs "29.1") (compat "30") (corfu "2.6"))
+;; Version: 2.7
+;; Package-Requires: ((emacs "29.1") (compat "30") (corfu "2.7"))
 ;; URL: https://github.com/minad/corfu
 
 ;; This file is part of GNU Emacs.
@@ -58,7 +58,7 @@
 Make the buffer persistent with NAME if non-nil."
   (if name
       (unless (buffer-local-value 'buffer-file-name buffer)
-        (if-let ((old (get-buffer name)))
+        (if-let* ((old (get-buffer name)))
             (setq buffer (prog1 old (kill-buffer buffer)))
           (with-current-buffer buffer
             (rename-buffer name))))
@@ -78,8 +78,8 @@ If called with a prefix ARG, the buffer is persistent."
              (cand-str (substring-no-properties cand))
              ((symbol-function #'help-buffer) ;; Work around bug#79792
               (lambda () (get-buffer-create " *corfu-info*"))))
-    (if-let ((fun (corfu--metadata-get 'company-doc-buffer))
-             (res (funcall fun cand)))
+    (if-let* ((fun (corfu--metadata-get 'company-doc-buffer))
+              (res (funcall fun cand)))
         (set-window-start (corfu-info--display-buffer
                            (get-buffer (or (car-safe res) res))
                            (and arg (format "*corfu info: %s*" cand-str)))
@@ -96,9 +96,9 @@ If called with a prefix ARG, the buffer is persistent."
     (user-error "No candidate selected"))
   (let* ((cand (nth corfu--index corfu--candidates))
          (cand-str (substring-no-properties cand)))
-    (if-let ((fun (corfu--metadata-get 'company-location))
-             ;; BUG: company-location may throw errors if location is not found
-             (loc (ignore-errors (funcall fun cand))))
+    (if-let* ((fun (corfu--metadata-get 'company-location))
+              ;; BUG: company-location may throw errors if location is not found
+              (loc (ignore-errors (funcall fun cand))))
         (with-selected-window
             (corfu-info--display-buffer
              (or (and (bufferp (car loc)) (car loc))
@@ -106,7 +106,7 @@ If called with a prefix ARG, the buffer is persistent."
              (and arg (format "*corfu loc: %s*" cand-str)))
           (without-restriction
             (goto-char (point-min))
-            (when-let ((pos (cdr loc)))
+            (when-let* ((pos (cdr loc)))
               (if (bufferp (car loc))
                   (goto-char pos)
                 (forward-line (1- pos))))

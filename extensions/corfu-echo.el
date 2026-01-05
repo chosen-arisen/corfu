@@ -1,12 +1,12 @@
 ;;; corfu-echo.el --- Show candidate documentation in echo area -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021-2025 Free Software Foundation, Inc.
+;; Copyright (C) 2021-2026 Free Software Foundation, Inc.
 
 ;; Author: Daniel Mendler <mail@daniel-mendler.de>
 ;; Maintainer: Daniel Mendler <mail@daniel-mendler.de>
 ;; Created: 2022
-;; Version: 2.6
-;; Package-Requires: ((emacs "29.1") (compat "30") (corfu "2.6"))
+;; Version: 2.7
+;; Package-Requires: ((emacs "29.1") (compat "30") (corfu "2.7"))
 ;; URL: https://github.com/minad/corfu
 
 ;; This file is part of GNU Emacs.
@@ -81,14 +81,14 @@ subsequent delay."
   :global t :group 'corfu)
 
 (cl-defmethod corfu--exhibit :after (&context (corfu-echo-mode (eql t)) &optional _auto)
-  (if-let (((not (minibufferp)))
-           (delay (if (consp corfu-echo-delay)
-                      (funcall (if corfu-echo--message #'cdr #'car)
-                               corfu-echo-delay)
-                    corfu-echo-delay))
-           (fun (corfu--metadata-get 'company-docsig))
-           (cand (and (>= corfu--index 0)
-                      (nth corfu--index corfu--candidates))))
+  (if-let* (((not (minibufferp)))
+            (delay (if (consp corfu-echo-delay)
+                       (funcall (if corfu-echo--message #'cdr #'car)
+                                corfu-echo-delay)
+                     corfu-echo-delay))
+            (fun (corfu--metadata-get 'company-docsig))
+            (cand (and (>= corfu--index 0)
+                       (nth corfu--index corfu--candidates))))
       (if (<= delay 0)
           (corfu-echo--show (funcall fun cand))
         (corfu-echo--cancel)
